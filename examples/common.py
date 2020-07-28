@@ -1,11 +1,11 @@
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-from speechemotionrecognition.utilities import get_data, \
+from utilities_test import get_data, \
     get_feature_vector_from_mfcc
 
-_DATA_PATH = '../dataset'
-_CLASS_LABELS = ("Neutral", "Angry", "Happy", "Sad")
+_DATA_PATH = '../korean_dataset'
+_CLASS_LABELS = ("angry", "disappoint", "fear", "happy", "neutral", "sad", "surrender")
 
 
 def extract_data(flatten):
