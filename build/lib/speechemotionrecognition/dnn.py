@@ -8,6 +8,8 @@ from keras import Sequential
 from keras.layers import LSTM as KERAS_LSTM, Dense, Dropout, Conv2D, Flatten, \
     BatchNormalization, Activation, MaxPooling2D
 
+from keras.models import load_model
+
 from . import Model
 
 
@@ -41,18 +43,18 @@ class DNN(Model):
         print(self.model.summary(), file=sys.stderr)
         self.save_path = self.save_path or self.name + '_best_model.h5'
 
+		
     def load_model(self, to_load):
         """
         Load the model weights from the given path.
 
         Args:
             to_load (str): path to the saved model file in h5 format.
-
         """
         try:
             self.model.load_weights(to_load)
         except:
-            sys.stderr.write("Invalid saved file provided")
+        	sys.stderr.write("Invalid saved file provided")
             sys.exit(-1)
 
     def save_model(self):

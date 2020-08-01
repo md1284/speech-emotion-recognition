@@ -25,13 +25,11 @@ class DNN(Model):
         Constructor to initialize the deep neural network model. Takes the input
         shape and number of classes and other parameters required for the
         abstract class `Model` as parameters.
-
         Args:
             input_shape (tuple): shape of the input
             num_classes (int): number of different classes ( labels ) in the data.
             **params: Additional parameters required by the underlying abstract
                 class `Model`.
-
         """
         super(DNN, self).__init__(**params)
         self.input_shape = input_shape
@@ -43,19 +41,17 @@ class DNN(Model):
         print(self.model.summary(), file=sys.stderr)
         self.save_path = self.save_path or self.name + '_best_model.h5'
 
-		
+
     def load_model(self, to_load):
         """
         Load the model weights from the given path.
-
         Args:
             to_load (str): path to the saved model file in h5 format.
         """
         try:
             self.model.load_weights(to_load)
         except:
-        	sys.stderr.write("Invalid saved file provided")
-            sys.exit(-1)
+            sys.stderr.write("Invalid saved file provided")
 
     def save_model(self):
         """
@@ -66,15 +62,12 @@ class DNN(Model):
     def train(self, x_train, y_train, x_val=None, y_val=None, n_epochs=50):
         """
         Train the model on the given training data.
-
-
         Args:
             x_train (numpy.ndarray): samples of training data.
             y_train (numpy.ndarray): labels for training data.
             x_val (numpy.ndarray): Optional, samples in the validation data.
             y_val (numpy.ndarray): Optional, labels of the validation data.
             n_epochs (int): Number of epochs to be trained.
-
         """
         best_acc = 0
         if x_val is None or y_val is None:

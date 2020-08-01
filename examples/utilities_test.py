@@ -12,6 +12,7 @@ from typing import Tuple
 
 import numpy as np
 import scipy.io.wavfile as wav
+import sounddevice as sd
 from speechpy.feature import mfcc
 
 mean_signal_length = 32000  # Empirically calculated for the given data set
@@ -29,8 +30,16 @@ def get_feature_vector_from_mfcc(file_path: str, flatten: bool,
     Returns:
         numpy.ndarray: feature vector of the wav file made from mfcc.
     """
-    fs, signal = wav.read(file_path)
+    #fs, signal = wav.read(file_path)
+
+    duration = 1
+    fs = 16000
+    signal = sd.rec(duration * fs, samplerate=fs, channels=1)
+    sd.wait()
+    print('signal shape: ', signal.shape)
+    #print('fs: ', fs)
     signal = signal.ravel()
+    print('signal shape: ', signal.shape)
     s_len = len(signal)
     # pad the signals to have same size if lesser than required
     # else slice them

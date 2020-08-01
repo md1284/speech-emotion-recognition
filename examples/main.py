@@ -1,68 +1,23 @@
-"""
-This example demonstrates how to use `CNN` model from
+'''
+strates how to use `CNN` model from
 `speechemotionrecognition` package
-"""
+'''
 from keras.utils import np_utils
 
-import os
-import sys
+import socket as sk
 import numpy as np
 from common import extract_data
-from speechemotionrecognition.dnn import CNN, LSTM
+from dnn_test import CNN, LSTM
 #from speechemotionrecognition.utilities import get_feature_vector_from_mfcc
 from utilities_test import get_feature_vector_from_mfcc
 
-def cnn_example():
-    to_flatten = False
-    x_train, x_test, y_train, y_test, num_labels = extract_data(
-        flatten=to_flatten)
-    y_train = np_utils.to_categorical(y_train)
-    y_test_train = np_utils.to_categorical(y_test)
-    in_shape = x_train[0].shape
-    x_train = x_train.reshape(x_train.shape[0], in_shape[0], in_shape[1], 1)
-    x_test = x_test.reshape(x_test.shape[0], in_shape[0], in_shape[1], 1)
-    model = CNN(input_shape=x_train[0].shape,
-                num_classes=num_labels)
-    
-    str = '../models/best_model_CNN.h5'
-    model.load_model(str)
-
-    print('load success')
-    model.trained = True
-    #model.train(x_train, y_train, x_test, y_test_train)
-    #model.evaluate(x_test, y_test)
-
-
-    filename = '../dataset/Neutral/09b03Nb.wav'
-
-    mfcc = get_feature_vector_from_mfcc(filename, flatten=to_flatten)
-    #print(mfcc.shape)
-    mfcc = np.array([mfcc])
-    #print(mfcc.shape)
-    mfcc = mfcc.reshape(mfcc.shape[0], mfcc.shape[1], mfcc.shape[2], 1)
-    #mfcc = mfcc.reshape(in_shape[0], in_shape[1], 1)
-    mfcc = model.model.predict(mfcc)
-    print(mfcc)
-    print(np.argmax(mfcc))
-
-    #print('prediction', model.predict_one(model.predict_one(
-   	#	get_feature_vector_from_mfcc(filename, flatten=to_flatten))),
-    #	'Actual 3')
-    print('CNN Done')
-
+HOST = '192.168.1.125'
+PORT = 1986
+client_socket = sk.socket(sk.AF_INET, sk.SOCK_STREAM)
+client_socket.connect((HOST, PORT))
 
 def lstm_example():
     to_flatten = False
-    '''
-    x_train, x_test, y_train, y_test, num_labels = extract_data(flatten=to_flatten)
-    y_train = np_utils.to_categorical(y_train)
-    y_test_train = np_utils.to_categorical(y_test)
-    print('Starting LSTM')
-    model = LSTM(input_shape=x_train[0].shape,
-                 num_classes=num_labels)
-    '''
-    #model.train(x_train, y_train, x_test, y_test_train, n_epochs=50)
-    #model.evaluate(x_test, y_test)
     in_shape = np.zeros((198,39))
     model = LSTM(input_shape=in_shape.shape, num_classes=7)
 
@@ -70,21 +25,56 @@ def lstm_example():
     model.load_model(load_path)
     model.trained = True
 
-    filename = '../korean_dataset/angry/acriil_ang_00002246.raw.wav'
-    print('prediction inputdata', model.predict_one(
+    '''
+    filename = 'angry_test.wav'
+    print('prediction angry ', model.predict_one(
         get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
 
+    filename = 'disappoint_test.wav'
+    print('prediction disappoint ', model.predict_one(
+        get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
+
+    filename = 'fear_test.wav'
+    print('prediction fear ', model.predict_one(
+        get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
+
+    filename = 'happy_test.wav'
+    print('prediction happy ', model.predict_one(
+        get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
+
+    filename = 'neutral_test.wav'
+    print('prediction neutral ', model.predict_one(
+        get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
+
+    filename = 'sad_test.wav'
+    print('prediction sad ', model.predict_one(
+        get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
+
+    filename = 'surrender_test.wav'
+    print('prediction surrender ', model.predict_one(
+        get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
+    '''
+
+    print('start')
+    while(1):
+        emotion_data = model.predict_one(
+            (get_feature_vector_from_mfcc('stream', flatten=to_flatten)))
+        print('prediction inputdata ', emotion_data)
+        emotion_data = str(emotion_data)
+        client_socket.sendall(emotion_data.encode())
+
+    '''
     data_path = '../testset'
     cur_dir = os.getcwd()
     sys.stderr.write('curdir: %s\n' % cur_dir)
     os.chdir(data_path)
 
     for filename in os.listdir('.'):
-    	filepath = os.getcwd() + '/' + filename
-    	print(filename, model.predict_one(
-        	get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
-
+        filepath = os.getcwd() + '/' + filename
+        print(filename, model.predict_one(
+            get_feature_vector_from_mfcc(filename, flatten=to_flatten)))
+    '''
 
 if __name__ == "__main__":
-	#cnn_example()
-	lstm_example()
+    #cnn_example()
+    lstm_example()
